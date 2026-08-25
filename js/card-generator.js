@@ -302,7 +302,7 @@ const CardGenerator = (function() {
 
     // Draw QR Code directly on Canvas
     const shareUrl = CalendarGenerator.generateShareUrl(event);
-    drawQrOnCanvas(ctx, shareUrl, qrX, qrY, qrSize, '#0b57d0');
+    drawQrOnCanvas(ctx, shareUrl, qrX, qrY, qrSize, '#000000');
 
     // Callout text on left side of banner (Crisp Glass typography)
     ctx.fillStyle = '#ffffff';
@@ -358,7 +358,8 @@ const CardGenerator = (function() {
         width: size,
         height: size,
         colorDark: color,
-        colorLight: '#ffffff'
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.L
       });
 
       const svg = tempDiv.querySelector('svg');

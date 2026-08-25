@@ -1243,9 +1243,9 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
       text: shareUrl,
       width: 220,
       height: 220,
-      colorDark: '#0b57d0',
+      colorDark: '#000000',
       colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.H
+      correctLevel: QRCode.CorrectLevel.L
     });
 
     qrModal.classList.add('open');
@@ -1340,9 +1340,9 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
           text: giftUrl,
           width: 200,
           height: 200,
-          colorDark: '#d97706',
+          colorDark: '#000000',
           colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.H
+          correctLevel: QRCode.CorrectLevel.L
         });
       }
 
