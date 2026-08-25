@@ -1235,6 +1235,10 @@ body.mode-simple {
   line-height: 1.6;
 }
 
+body.mode-simple .senior-welcome-banner {
+  display: block !important;
+}
+
 body.mode-simple .hero-banner,
 body.mode-simple .chips-section,
 body.mode-simple .detection-checklist-container,

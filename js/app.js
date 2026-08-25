@@ -310,10 +310,16 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
     });
 
     btnShareSenior?.addEventListener('click', async () => {
-      const baseUrl = window.location.origin + window.location.pathname.replace(/\/+$/, '');
+      let baseUrl = window.location.href.split('?')[0].split('#')[0];
+      if (!baseUrl.endsWith('.html') && !baseUrl.endsWith('/')) {
+        baseUrl += '/';
+      }
+      if (baseUrl.endsWith('/')) {
+        baseUrl += 'index.html';
+      }
       const seniorUrl = `${baseUrl}?mode=senior`;
       await copyToClipboard(seniorUrl);
-      showSnackbar("🔗 Lien direct du Mode Simple copié pour vos proches !");
+      showSnackbar("🔗 Lien direct Mode Senior copié ! Prêt à envoyer.");
     });
   }
 
