@@ -1242,7 +1242,6 @@ body.mode-simple .senior-welcome-banner {
 body.mode-simple #simple-mode-prompt-banner,
 body.mode-simple .hero-banner,
 body.mode-simple .chips-section,
-body.mode-simple .detection-checklist-container,
 body.mode-simple .smart-tools-accordion,
 body.mode-simple .extra-tools-panel,
 body.mode-simple #audio-player-container,
@@ -1252,9 +1251,53 @@ body.mode-simple #btn-test-envelope,
 body.mode-simple #btn-copy-share-link,
 body.mode-simple #btn-import-img-text,
 body.mode-simple #btn-import-audio,
-body.mode-simple .textarea-actions #btn-voice-dictation,
 body.mode-simple div:has(> #cb-enable-pin) {
   display: none !important;
+}
+
+body.mode-simple .detection-checklist-container {
+  display: block !important;
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: var(--md-sys-color-surface-container);
+  border-radius: 18px;
+  border: 2px solid var(--md-sys-color-primary-container);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+body.mode-simple .detection-header {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+body.mode-simple .detection-score-badge {
+  font-size: 1.05rem;
+  padding: 4px 14px;
+  font-weight: 800;
+}
+
+body.mode-simple .detection-badges-grid {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+body.mode-simple .detect-badge {
+  font-size: 1rem;
+  padding: 10px 14px;
+  font-weight: 700;
+  border-radius: 12px;
+}
+
+body.mode-simple .detect-badge .material-symbols-outlined {
+  font-size: 22px;
+}
+
+body.mode-simple .detection-help-tip {
+  font-size: 0.95rem;
+  margin-top: 12px;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 body.mode-simple .grid-layout {
