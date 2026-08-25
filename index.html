@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MessToCal - Convertisseur Messenger & Facebook vers Calendrier (Google, Outlook, Apple, Yahoo)</title>
+
+  <!-- PWA & Mobile Web App Meta -->
+  <meta name="theme-color" content="#0b57d0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MessToCal">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon-192.svg">
+
+  <!-- Open Graph & Social Sharing (Messenger, Facebook, Twitter) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MessToCal - Du message Messenger à votre Calendrier en 1 clic">
+  <meta property="og:description" content="Collez un message Messenger désordonné ou une invitation Facebook : les dates, heures, lieux et thèmes sont réorganisés automatiquement et ajoutés à votre agenda Google, Outlook, Yahoo ou Apple .ics.">
+  <meta property="og:image" content="./icons/icon-512.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MessToCal - Convertisseur d'événements Messenger / Facebook">
+  <meta name="twitter:description" content="Parseur intelligent local pour transformer n'importe quel texte de clavardage en événement de calendrier structuré.">
+  <meta name="twitter:image" content="./icons/icon-512.svg">
+
+  <!-- Material Design 3 Google Fonts & Festive Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:wght@700;900&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
+  <!-- Confetti Animation & Tesseract Local OCR CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+  <!-- Top App Bar with Google Translate & Dark/Light Mode -->
+  <header class="app-bar">
+    <div class="app-bar-inner">
+      <div class="brand-section">
+        <img src="./icons/favicon.svg" alt="Logo MessToCal" class="brand-logo">
+        <div class="brand-titles">
+          <div class="brand-name">
+            MessToCal
+            <span class="brand-badge">M3 PWA</span>
+          </div>
+          <span class="brand-subtitle">Messenger & Facebook vers Calendrier</span>
+        </div>
+      </div>
+
+      <div class="top-bar-actions">
+        <!-- Google Translate Widget Integration -->
+        <div class="translate-wrapper" title="Traduire cette page">
+          <span class="material-symbols-outlined translate-icon">translate</span>
+          <div id="google_translate_element"></div>
+        </div>
+
+        <!-- PWA Install Button (shown when available) -->
+        <button id="btn-install-pwa" class="install-pwa-btn" aria-label="Installer l'application">
+          <span class="material-symbols-outlined" style="font-size: 18px;">install_mobile</span>
+          <span>Installer</span>
+        </button>
+
+        <!-- Host Profile Settings (Saved locally) -->
+        <button id="btn-open-profile-modal" class="icon-btn" aria-label="Mon Profil Hôte Sauvegardé" title="Mon Profil Hôte & Adresse Locale">
+          <span class="material-symbols-outlined">account_circle</span>
+        </button>
+
+        <!-- Simple / Senior Mode Toggler -->
+        <button id="btn-toggle-simple-mode" class="m3-chip" style="font-weight: 700; background: #e0f2fe; color: #0369a1; border: 1.5px solid #38bdf8; display: inline-flex; align-items: center; gap: 4px;" title="Activer le mode grand format et ultra-simple">
+          <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
+          <span id="simple-mode-label">Mode Simple (Senior)</span>
+        </button>
+
+        <!-- Dark / Light Theme Toggle -->
+        <button id="theme-toggle" class="icon-btn" aria-label="Changer de thème clair/sombre" title="Mode Sombre / Clair">
+          <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-container">
+
+    <!-- Guest / Invitation Landing Banner (Displayed when scanned via QR code or shared link) -->
+    <section id="guest-banner" class="guest-hero-card" style="display: none; margin-bottom: 2rem;">
+      <div class="guest-hero-header">
+        <span class="material-symbols-outlined" style="font-size: 36px; color: var(--md-sys-color-primary);">celebration</span>
+        <div>
+          <h2 id="guest-title" style="font-size: 1.6rem; font-weight: 700; color: var(--md-sys-color-primary);">Invitation à l'événement</h2>
+          <p id="guest-subtitle" style="font-size: 0.95rem; color: var(--md-sys-color-on-surface-variant);">Ajoutez cet événement directement à votre calendrier en un clic !</p>
+        </div>
+      </div>
+
+      <!-- Interactive 3D Opening Envelope Container -->
+      <div id="envelope-3d-mount"></div>
+
+      <div class="guest-quick-actions" style="margin-top: 1.25rem;">
+        <span class="chips-label" style="font-size: 0.9rem; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 0.6rem; display: block;">
+          Ajouter directement à votre calendrier :
+        </span>
+        <div class="export-grid">
+          <a id="guest-google-cal" class="cal-btn cal-btn-google" target="_blank" rel="noopener">
+            <span class="material-symbols-outlined">calendar_month</span>
+            Google Agenda
+          </a>
+          <button type="button" id="guest-ics-download" class="cal-btn cal-btn-apple">
+            <span class="material-symbols-outlined">download</span>
+            Fichier .ICS (Apple)
+          </button>
+          <a id="guest-outlook-cal" class="cal-btn cal-btn-outlook" target="_blank" rel="noopener">
+            <span class="material-symbols-outlined">mail</span>
+            Outlook Live
+          </a>
+          <a id="guest-yahoo-cal" class="cal-btn cal-btn-yahoo" target="_blank" rel="noopener">
+            <span class="material-symbols-outlined">event</span>
+            Yahoo Calendrier
+          </a>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+          <a id="guest-giftlist-btn" class="m3-chip" style="display: none; background: #fef3c7; color: #b45309; border: 1.5px solid #d97706; font-weight: 700; text-decoration: none;" target="_blank" rel="noopener">
+            <span class="material-symbols-outlined" style="font-size: 16px;">featured_seasonal_and_gifts</span>
+            🎁 Voir la Liste de Cadeaux / Cagnotte
+          </a>
+          <button type="button" id="btn-guest-web-push" class="m3-chip" style="background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); font-weight: 700;">
+            <span class="material-symbols-outlined" style="font-size: 16px;">notifications_active</span>
+            🔔 Activer un rappel par notification (24h avant)
+          </button>
+          <button type="button" id="btn-guest-uber" class="m3-chip" style="background: #000; color: #fff;">
+            <span class="material-symbols-outlined" style="font-size: 16px;">local_taxi</span>
+            🚕 Commander Uber vers le lieu
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hero Title -->
+    <section class="hero-banner">
+      <h1 class="hero-title">Transformez vos messages <span>en événements de calendrier</span></h1>
+      <p class="hero-desc">
+        Collez un message Messenger ou Facebook désordonné. Le script local analyse automatiquement les dates, heures, lieux et consignes pour créer vos liens <strong>Google Calendar, Outlook, Yahoo et fichier .ics</strong>.
+      </p>
+    </section>
+
+    <!-- Main Two-Column Grid -->
+    <div class="grid-layout">
+
+      <!-- LEFT COLUMN: Input & Presets -->
+      <div class="input-column">
+        <div class="m3-card elevated">
+          
+          <div class="card-header">
+            <h2 class="card-title">
+              <span class="material-symbols-outlined">chat</span>
+              1. Collez votre message brut
+            </h2>
+          </div>
+
+          <!-- Quick Test Presets Chips -->
+          <div class="chips-section">
+            <span class="chips-label">Exemples rapides à tester :</span>
+            <div class="chips-container">
+              <button class="m3-chip preset-chip" data-preset="bbq">
+                <span class="material-symbols-outlined" style="font-size: 16px;">outdoor_grill</span>
+                Exemple 1 : Dîner BBQ (Midi)
+              </button>
+              <button class="m3-chip preset-chip" data-preset="souper">
+                <span class="material-symbols-outlined" style="font-size: 16px;">restaurant</span>
+                Exemple 2 : Souper d'anniversaire
+              </button>
+              <button class="m3-chip preset-chip" data-preset="soiree">
+                <span class="material-symbols-outlined" style="font-size: 16px;">celebration</span>
+                Exemple 3 : Soirée & Événement FB
+              </button>
+            </div>
+          </div>
+
+          <!-- Raw Input Textarea -->
+          <div class="textarea-wrapper">
+            <textarea id="raw-input" class="m3-textarea" placeholder="Collez ici votre message Messenger désordonné, invitation SMS ou publication Facebook... (ex: Salut tout le monde, on fait un dîner BBQ le samedi 18 juillet vers 12h30...)"></textarea>
+            <div class="textarea-actions">
+              <button id="btn-import-img-text" class="mini-action-btn" title="Importer une image ou capture d'écran">
+                <span class="material-symbols-outlined" style="font-size: 14px;">add_photo_alternate</span>
+                Importer image
+              </button>
+              <input type="file" id="input-msg-image" accept="image/*" style="display: none;">
+              <button id="btn-paste" class="mini-action-btn" title="Coller depuis le presse-papier">
+                <span class="material-symbols-outlined" style="font-size: 14px;">content_paste</span>
+                Coller
+              </button>
+              <button id="btn-clear" class="mini-action-btn" title="Effacer tout">
+                <span class="material-symbols-outlined" style="font-size: 14px;">clear</span>
+                Effacer
+              </button>
+            </div>
+          </div>
+
+          <!-- Voice Dictation & Audio Tools Row -->
+          <div class="voice-tools-row">
+            <button type="button" id="btn-voice-dictation" class="btn-voice" title="Parler pour dicter votre invitation">
+              <span class="material-symbols-outlined" id="mic-icon">mic</span>
+              <span id="mic-label">Dictée Vocale en Direct</span>
+            </button>
+            <button type="button" id="btn-import-audio" class="btn-tonal" style="font-size: 0.85rem; padding: 0.6rem 1rem;" title="Importer une note vocale audio (mp3, m4a, wav, ogg)">
+              <span class="material-symbols-outlined" style="font-size: 18px;">audiotrack</span>
+              Note Vocale Audio
+            </button>
+            <input type="file" id="input-audio-file" accept="audio/*" style="display: none;">
+          </div>
+          <div id="audio-player-container" style="display: none; margin-bottom: 0.75rem; background: var(--md-sys-color-surface-container); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline-variant);">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--md-sys-color-primary); margin-bottom: 4px;">🎵 Note vocale chargée :</div>
+            <audio id="audio-voice-note-player" controls style="width: 100%; height: 36px; border-radius: 6px;"></audio>
+          </div>
+
+          <!-- Real-Time Detection Checklist (Badges turn GREEN when detected!) -->
+          <div class="detection-checklist-container">
+            <div class="checklist-title">
+              <span>🎯 Informations détectées (Vert = Prêt, Gris = Manquant) :</span>
+              <span id="detection-score" style="font-size: 0.75rem; color: var(--md-sys-color-primary); font-weight: 700;">0/6</span>
+            </div>
+
+            <div class="badges-grid">
+              <span id="badge-title" class="status-badge">
+                <span class="material-symbols-outlined">title</span>
+                <span class="badge-text">Titre</span>
+              </span>
+              <span id="badge-date" class="status-badge">
+                <span class="material-symbols-outlined">calendar_today</span>
+                <span class="badge-text">Date</span>
+              </span>
+              <span id="badge-time" class="status-badge">
+                <span class="material-symbols-outlined">schedule</span>
+                <span class="badge-text">Heure</span>
+              </span>
+              <span id="badge-location" class="status-badge">
+                <span class="material-symbols-outlined">location_on</span>
+                <span class="badge-text">Lieu / Adresse</span>
+              </span>
+              <span id="badge-organizer" class="status-badge">
+                <span class="material-symbols-outlined">person</span>
+                <span class="badge-text">Hôte</span>
+              </span>
+              <span id="badge-details" class="status-badge">
+                <span class="material-symbols-outlined">magic_button</span>
+                <span class="badge-text">Thème / Repas</span>
+              </span>
+            </div>
+
+            <div id="detection-feedback-hint" class="detection-hint">
+              <span class="material-symbols-outlined" style="font-size: 14px;">info</span>
+              <span id="hint-text">Collez votre texte ou parlez au micro pour analyser en direct.</span>
+            </div>
+          </div>
+
+          <!-- Action Row -->
+          <div class="action-row">
+            <button id="btn-parse" class="btn-primary">
+              <span class="material-symbols-outlined">auto_fix_high</span>
+              <span>Analyser & Organiser</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Parsed Event & Calendar Exports -->
+      <div class="output-column">
+        <div class="m3-card elevated parsed-result-card">
+
+          <div class="card-header">
+            <h2 class="card-title">
+              <span class="material-symbols-outlined">event_available</span>
+              2. Événement Structuré & Calendriers
+            </h2>
+            <div id="event-countdown" class="countdown-chip">Calcul en cours...</div>
+          </div>
+
+          <!-- Form Fields for Direct Live Editing -->
+          <div class="form-grid">
+
+            <!-- Title -->
+            <div class="m3-field-group full-width">
+              <label for="event-title">
+                <span class="material-symbols-outlined" style="font-size: 16px;">title</span>
+                Titre de l'événement
+              </label>
+              <input type="text" id="event-title" class="m3-input" placeholder="Titre de l'événement">
+            </div>
+
+            <!-- Organizer -->
+            <div class="m3-field-group">
+              <label for="event-organizer">
+                <span class="material-symbols-outlined" style="font-size: 16px;">person</span>
+                Hôte / Organisateur
+              </label>
+              <input type="text" id="event-organizer" class="m3-input" placeholder="Ex: Alex Dupont">
+            </div>
+
+            <!-- Theme -->
+            <div class="m3-field-group">
+              <label for="event-theme">
+                <span class="material-symbols-outlined" style="font-size: 16px;">magic_button</span>
+                Thème / Déguisement
+              </label>
+              <input type="text" id="event-theme" class="m3-input" placeholder="Ex: L'espace, Rétro, etc.">
+            </div>
+
+            <!-- Start Date -->
+            <div class="m3-field-group">
+              <label for="event-start-date">
+                <span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span>
+                Date de début
+              </label>
+              <input type="date" id="event-start-date" class="m3-input">
+            </div>
+
+            <!-- Start Time -->
+            <div class="m3-field-group">
+              <label for="event-start-time">
+                <span class="material-symbols-outlined" style="font-size: 16px;">schedule</span>
+                Heure de début
+              </label>
+              <input type="time" id="event-start-time" class="m3-input">
+            </div>
+
+            <!-- End Date -->
+            <div class="m3-field-group">
+              <label for="event-end-date">
+                <span class="material-symbols-outlined" style="font-size: 16px;">event_repeat</span>
+                Date de fin
+              </label>
+              <input type="date" id="event-end-date" class="m3-input">
+            </div>
+
+            <!-- End Time (with Smart Heuristics) -->
+            <div class="m3-field-group">
+              <label for="event-end-time">
+                <span class="material-symbols-outlined" style="font-size: 16px;">alarm_off</span>
+                Heure de fin estimée
+              </label>
+              <input type="time" id="event-end-time" class="m3-input" title="Estimée automatiquement à 18h pour le dîner ou 22h pour le souper si non précisée">
+            </div>
+
+            <!-- Location & Location Helpers -->
+            <div class="m3-field-group full-width">
+              <label for="event-location">
+                <span class="material-symbols-outlined" style="font-size: 16px;">location_on</span>
+                Lieu / Adresse
+              </label>
+              <input type="text" id="event-location" class="m3-input" placeholder="Adresse, chez l'hôte ou à confirmer...">
+              <div class="location-helpers">
+                <button type="button" id="loc-home" class="helper-chip-btn">
+                  🏠 À la maison / Chez nous
+                </button>
+                <button type="button" id="loc-saved-home" class="helper-chip-btn" style="background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); font-weight: 700;">
+                  ⭐ Mon adresse enregistrée
+                </button>
+                <button type="button" id="loc-gps" class="helper-chip-btn">
+                  📍 Ma position GPS
+                </button>
+                <button type="button" id="loc-maps" class="helper-chip-btn">
+                  🗺️ Google Maps
+                </button>
+              </div>
+            </div>
+
+            <!-- Food / Potluck notes -->
+            <div class="m3-field-group full-width">
+              <label for="event-food">
+                <span class="material-symbols-outlined" style="font-size: 16px;">dinner_dining</span>
+                Repas & Consignes
+              </label>
+              <input type="text" id="event-food" class="m3-input" placeholder="Ex: Commande au resto, BYOB, extérieur...">
+            </div>
+
+            <!-- GiftList / Wishlist link -->
+            <div class="m3-field-group full-width">
+              <label for="event-giftlist">
+                <span class="material-symbols-outlined" style="font-size: 16px;">featured_seasonal_and_gifts</span>
+                🎁 Liste de cadeaux / GiftList / Cagnotte (Lien ou souhaits)
+              </label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="event-giftlist" class="m3-input" placeholder="Ex: https://giftlist.com/... ou liste d'idées">
+                <button type="button" id="btn-giftlist-qr" class="helper-chip-btn" style="white-space: nowrap; font-weight: 700;" title="Afficher le QR code dédié pour la liste de cadeaux">
+                  📱 QR Cadeaux
+                </button>
+              </div>
+            </div>
+
+            <!-- Detailed Notes -->
+            <div class="m3-field-group full-width">
+              <label for="event-notes">
+                <span class="material-symbols-outlined" style="font-size: 16px;">notes</span>
+                Description & Notes complètes
+              </label>
+              <textarea id="event-notes" class="m3-input" rows="3" placeholder="Notes intégrées dans l'agenda..."></textarea>
+            </div>
+
+          </div>
+
+          <!-- Section Sécurité Chiffrement PIN 4 Chiffres (100% Local / Sans Serveur) -->
+          <div style="background: var(--md-sys-color-surface-container); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1.25rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 700; color: var(--md-sys-color-on-surface);">
+                <input type="checkbox" id="cb-enable-pin" style="width: 18px; height: 18px; accent-color: var(--md-sys-color-primary);">
+                🔒 Protéger par mot de passe (PIN 4 chiffres)
+              </label>
+              <input type="password" id="input-event-pin" maxlength="4" placeholder="Code (ex: 1234)" style="display: none; width: 110px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--md-sys-color-primary); font-size: 0.9rem; font-weight: 700; text-align: center; letter-spacing: 2px;">
+            </div>
+            <div id="pin-security-hint" style="font-size: 0.74rem; color: var(--md-sys-color-on-surface-variant); margin-top: 4px; display: none;">
+              🛡️ Chiffrement AES-GCM local : impossible aux robots de lire l'invitation sans le code. 0 serveur requis !
+            </div>
+          </div>
+
+          <!-- Calendar Export Buttons (Google, Outlook, Yahoo, .ics) -->
+          <div>
+            <span class="chips-label" style="margin-bottom: 0.75rem;">Ajouter directement à votre calendrier :</span>
+            <div class="export-grid">
+              
+              <!-- 1. Google Calendar (Priorité) -->
+              <a id="btn-google-cal" class="cal-btn cal-btn-google" target="_blank" rel="noopener">
+                <span class="material-symbols-outlined">calendar_month</span>
+                Google Agenda
+              </a>
+
+              <!-- 2. Apple / Universal .ICS File -->
+              <button type="button" id="btn-ics-download" class="cal-btn cal-btn-apple">
+                <span class="material-symbols-outlined">download</span>
+                Fichier .ICS (Apple)
+              </button>
+
+              <!-- 3. Outlook Calendar -->
+              <a id="btn-outlook-cal" class="cal-btn cal-btn-outlook" target="_blank" rel="noopener">
+                <span class="material-symbols-outlined">mail</span>
+                Outlook Live
+              </a>
+
+              <!-- 4. Yahoo Calendar -->
+              <a id="btn-yahoo-cal" class="cal-btn cal-btn-yahoo" target="_blank" rel="noopener">
+                <span class="material-symbols-outlined">event</span>
+                Yahoo Calendrier
+              </a>
+
+            </div>
+          </div>
+
+          <!-- Social Sharing & QR Code Extras -->
+          <div class="share-actions-row">
+            <button type="button" id="btn-share-messenger" class="btn-tonal" style="flex: 1;">
+              <span class="material-symbols-outlined">send</span>
+              Partager sur Messenger
+            </button>
+
+            <button type="button" id="btn-download-card" class="btn-tonal" title="Générer et télécharger une affiche d'invitation PNG">
+              <span class="material-symbols-outlined">image</span>
+              Affiche d'invitation PNG
+            </button>
+
+            <button type="button" id="btn-show-qr" class="btn-tonal" title="Afficher le QR Code pour mobile">
+              <span class="material-symbols-outlined">qr_code_2</span>
+              QR Code
+            </button>
+
+            <button type="button" id="btn-test-envelope" class="btn-tonal" title="Tester l'enveloppe 3D interactive">
+              <span class="material-symbols-outlined">mark_email_read</span>
+              Enveloppe 3D
+            </button>
+
+            <button type="button" id="btn-copy-share-link" class="btn-tonal" title="Copier le lien partageable">
+              <span class="material-symbols-outlined">share</span>
+              Lien web
+            </button>
+          </div>
+
+          <!-- Section 3 : Outils Extraordinaires (GPS, Météo, Potluck) -->
+          <div class="extra-tools-panel" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant);">
+            <span class="chips-label">🚀 Outils pratiques pour vos invités :</span>
+
+            <div class="sub-tool-group" style="margin-bottom: 0.75rem;">
+              <span style="font-size: 0.78rem; font-weight: 600; color: var(--md-sys-color-on-surface-variant); display: block; margin-bottom: 0.35rem;">🚗 Navigation & Trajet en direct :</span>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" id="nav-google" class="helper-chip-btn">
+                  🗺️ Google Maps
+                </button>
+                <button type="button" id="nav-waze" class="helper-chip-btn">
+                  🚙 Waze
+                </button>
+                <button type="button" id="nav-apple" class="helper-chip-btn">
+                  🍏 Apple Plans
+                </button>
+                <button type="button" id="nav-weather" class="helper-chip-btn">
+                  🌤️ Météo
+                </button>
+                <button type="button" id="btn-live-route" class="helper-chip-btn" style="background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); font-weight: 700;">
+                  🚦 Partager mon Trajet Live
+                </button>
+              </div>
+            </div>
+
+            <!-- Boutons Courriel HTML & Widget Mobile -->
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+              <button type="button" id="btn-open-email-modal" class="btn-tonal" style="flex: 1; font-size: 0.82rem;">
+                <span class="material-symbols-outlined" style="font-size: 16px;">outgoing_mail</span>
+                Courriel HTML Pro
+              </button>
+              <button type="button" id="btn-open-widget-modal" class="btn-tonal" style="flex: 1; font-size: 0.82rem;">
+                <span class="material-symbols-outlined" style="font-size: 16px;">widgets</span>
+                Widget Mobile
+              </button>
+            </div>
+
+            <!-- Liste Potluck / Ce qu'on apporte -->
+            <div class="sub-tool-group">
+              <span style="font-size: 0.78rem; font-weight: 600; color: var(--md-sys-color-on-surface-variant); display: block; margin-bottom: 0.35rem;">📋 Organisateur de Potluck / Apports :</span>
+              <div style="display: flex; gap: 0.5rem;">
+                <button type="button" id="btn-copy-potluck" class="btn-tonal" style="font-size: 0.8rem; padding: 0.5rem 1rem; width: 100%;">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">checklist</span>
+                  Copier la liste de Potluck / Tâches pour Messenger
+                </button>
+              </div>
+            </div>
+
+            <!-- Suite d'outils intelligents "WOW" -->
+            <div class="smart-tools-accordion" style="margin-top: 1rem;">
+              
+              <!-- 1. Calculateur de Portions -->
+              <div class="accordion-item" id="acc-food">
+                <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+                  <span>🍕 Calculateur de Nourriture & Boissons (Portions)</span>
+                  <span class="material-symbols-outlined expand-icon">expand_more</span>
+                </div>
+                <div class="accordion-content">
+                  <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem;">
+                    <div style="flex: 1;">
+                      <label style="font-size: 0.75rem; font-weight: 700;">Adultes :</label>
+                      <input type="number" id="calc-adults" class="m3-input" value="10" min="1" max="500">
+                    </div>
+                    <div style="flex: 1;">
+                      <label style="font-size: 0.75rem; font-weight: 700;">Enfants :</label>
+                      <input type="number" id="calc-kids" class="m3-input" value="2" min="0" max="100">
+                    </div>
+                  </div>
+                  <div id="calc-results" style="font-size: 0.85rem; line-height: 1.6; background: var(--md-sys-color-surface); padding: 10px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline-variant);">
+                    <!-- Results populated dynamically -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Allergies & Restrictions -->
+              <div class="accordion-item" id="acc-allergies">
+                <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+                  <span>⚠️ Fiche Allergies & Restrictions Alimentaires</span>
+                  <span class="material-symbols-outlined expand-icon">expand_more</span>
+                </div>
+                <div class="accordion-content">
+                  <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">Cochez pour inclure dans les consignes de l'invitation :</p>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.82rem;">
+                    <label><input type="checkbox" class="allergy-cb" value="Sans gluten"> 🌾 Sans gluten</label>
+                    <label><input type="checkbox" class="allergy-cb" value="Végétarien"> 🥗 Végétarien</label>
+                    <label><input type="checkbox" class="allergy-cb" value="Sans arachides/noix"> 🥜 Sans noix/arachides</label>
+                    <label><input type="checkbox" class="allergy-cb" value="Sans lactose"> 🥛 Sans lactose</label>
+                    <label><input type="checkbox" class="allergy-cb" value="Halal"> 🥩 Halal</label>
+                    <label><input type="checkbox" class="allergy-cb" value="Casher"> ✡️ Casher</label>
+                  </div>
+                  <button type="button" id="btn-apply-allergies" class="btn-tonal" style="margin-top: 0.75rem; width: 100%; font-size: 0.8rem;">
+                    Ajouter aux consignes de l'événement
+                  </button>
+                </div>
+              </div>
+
+              <!-- 3. Idées Cadeaux -->
+              <div class="accordion-item" id="acc-gifts">
+                <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+                  <span>🎁 Suggestions Cadeaux & Cagnotte</span>
+                  <span class="material-symbols-outlined expand-icon">expand_more</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="gift-ideas-list" style="font-size: 0.82rem; line-height: 1.6; margin-bottom: 0.75rem;"></div>
+                  <button type="button" id="btn-create-cagnotte" class="btn-tonal" style="width: 100%; font-size: 0.8rem;">
+                    💰 Copier le texte de cagnotte / cadeau commun
+                  </button>
+                </div>
+              </div>
+
+              <!-- 4. Répondeur Automatique -->
+              <div class="accordion-item" id="acc-replies">
+                <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+                  <span>💬 Répondeur Rapide Messenger / SMS (1 clic)</span>
+                  <span class="material-symbols-outlined expand-icon">expand_more</span>
+                </div>
+                <div class="accordion-content" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                  <button type="button" id="btn-reply-accept" class="helper-chip-btn" style="text-align: left; padding: 8px;">
+                    ✅ <strong>Accepter :</strong> « Merci ! Je serai là avec grand plaisir ! »
+                  </button>
+                  <button type="button" id="btn-reply-decline" class="helper-chip-btn" style="text-align: left; padding: 8px;">
+                    ❌ <strong>Décliner poliment :</strong> « Merci d'avoir pensé à moi, malheureusement... »
+                  </button>
+                  <button type="button" id="btn-reply-late" class="helper-chip-btn" style="text-align: left; padding: 8px;">
+                    🚗 <strong>En retard :</strong> « Je suis en route, j'arrive dans 15-20 min ! »
+                  </button>
+                </div>
+              </div>
+
+              <!-- 5. Dress Code & Style -->
+              <div class="accordion-item" id="acc-dress">
+                <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+                  <span>👗 Dress Code & Palette de Couleurs</span>
+                  <span class="material-symbols-outlined expand-icon">expand_more</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="dress-code-preview" style="font-size: 0.85rem; line-height: 1.5;"></div>
+                </div>
+              </div>
+
+              <!-- 6. Exports Multi-Formats & Marque-Places -->
+              <div class="accordion-item" id="acc-exports">
+                <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+                  <span>📦 Exports Multi-Formats & Marque-Places PDF</span>
+                  <span class="material-symbols-outlined expand-icon">expand_more</span>
+                </div>
+                <div class="accordion-content" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                  <button type="button" id="btn-export-placecards" class="btn-tonal" style="font-size: 0.8rem;">
+                    🏷️ Imprimer Marque-Places & Étiquettes Découpables (PDF)
+                  </button>
+                  <button type="button" id="btn-export-json" class="btn-tonal" style="font-size: 0.8rem;">
+                    💾 Télécharger en format JSON (MessToCal)
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Card Template Selector & Preview Modal -->
+  <div id="card-modal" class="modal-backdrop">
+    <div class="modal-box" style="max-width: 620px; width: 95%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 0.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--md-sys-color-primary);">🎨 Choisissez le modèle de votre affiche</h3>
+        <button id="card-modal-close" class="icon-btn" title="Fermer">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); text-align: left; width: 100%;">
+        Sélectionnez parmi 5 thèmes Unsplash. Votre affiche intégrera automatiquement le titre, la date, le lieu et le <strong>QR Code officiel</strong> reliant directement vos invités à l'agenda !
+      </p>
+
+      <!-- 5 Template Selector Chips + Custom Photo Import -->
+      <div class="template-selector-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.5rem; width: 100%; margin: 0.75rem 0;">
+        <button type="button" class="m3-chip template-btn active" data-template="confetti">
+          <span class="material-symbols-outlined" style="font-size: 16px;">celebration</span>
+          1. Confettis & Ballons
+        </button>
+        <button type="button" class="m3-chip template-btn" data-template="cake">
+          <span class="material-symbols-outlined" style="font-size: 16px;">cake</span>
+          2. Gâteau & Bougies
+        </button>
+        <button type="button" class="m3-chip template-btn" data-template="lights">
+          <span class="material-symbols-outlined" style="font-size: 16px;">nightlife</span>
+          3. Soirée Chic
+        </button>
+        <button type="button" class="m3-chip template-btn" data-template="bbq">
+          <span class="material-symbols-outlined" style="font-size: 16px;">outdoor_grill</span>
+          4. BBQ & Jardin
+        </button>
+        <button type="button" class="m3-chip template-btn" data-template="modern_m3">
+          <span class="material-symbols-outlined" style="font-size: 16px;">palette</span>
+          5. Gradient M3
+        </button>
+        <button type="button" id="btn-upload-custom-card-bg" class="m3-chip template-btn" style="border: 1.5px dashed var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-high);">
+          <span class="material-symbols-outlined" style="font-size: 16px; color: var(--md-sys-color-primary);">add_photo_alternate</span>
+          📸 Importer ma photo
+        </button>
+        <input type="file" id="input-custom-card-bg" accept="image/*" style="display: none;">
+      </div>
+
+      <!-- Glassmorphic Customizer Live Controls -->
+      <div class="glass-customizer-panel" style="background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 10px; padding: 10px 14px; margin-bottom: 0.75rem; display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 160px;">
+            <label for="slider-glass-opacity" style="font-size: 0.75rem; font-weight: 700; white-space: nowrap;">✨ Opacité Verre :</label>
+            <input type="range" id="slider-glass-opacity" min="0.10" max="0.65" step="0.05" value="0.28" style="width: 100%; cursor: pointer;">
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 0.75rem; font-weight: 700;">Teinte :</span>
+            <button type="button" class="tint-btn active" data-tint="white" style="width: 22px; height: 22px; border-radius: 50%; background: #ffffff; border: 2px solid var(--md-sys-color-primary); cursor: pointer;" title="Blanc Givré"></button>
+            <button type="button" class="tint-btn" data-tint="gold" style="width: 22px; height: 22px; border-radius: 50%; background: #ffd700; border: 1px solid rgba(0,0,0,0.2); cursor: pointer;" title="Or Doré"></button>
+            <button type="button" class="tint-btn" data-tint="cyan" style="width: 22px; height: 22px; border-radius: 50%; background: #38bdf8; border: 1px solid rgba(0,0,0,0.2); cursor: pointer;" title="Cyan Éthéré"></button>
+            <button type="button" class="tint-btn" data-tint="purple" style="width: 22px; height: 22px; border-radius: 50%; background: #c084fc; border: 1px solid rgba(0,0,0,0.2); cursor: pointer;" title="Violet Cosmique"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Canvas Card Preview Container -->
+      <div id="card-preview-container" style="width: 100%; max-height: 380px; overflow-y: auto; border-radius: var(--md-shape-corner-medium); border: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container); display: flex; justify-content: center; padding: 12px;">
+        <div id="card-canvas-wrapper" style="max-width: 280px; box-shadow: var(--md-sys-elevation-2); border-radius: 12px; overflow: hidden;"></div>
+      </div>
+
+      <!-- Modal Download Actions -->
+      <div style="display: flex; gap: 0.75rem; width: 100%; margin-top: 0.75rem;">
+        <button type="button" id="btn-modal-download-png" class="btn-primary" style="flex: 1;">
+          <span class="material-symbols-outlined">download</span>
+          Télécharger l'Affiche PNG (HD)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div id="qr-modal" class="modal-backdrop">
+    <div class="modal-box">
+      <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--md-sys-color-primary);">Scannez avec votre téléphone</h3>
+      <p style="font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant);">
+        Ouvrez l'appareil photo de votre smartphone pour importer instantanément l'événement dans votre agenda !
+      </p>
+      <div id="qrcode-container"></div>
+      <button id="qr-close-btn" class="modal-close-btn">Fermer</button>
+    </div>
+  </div>
+
+  <!-- 3D Interactive Envelope Test Modal -->
+  <div id="envelope-modal" class="modal-backdrop">
+    <div class="modal-box" style="max-width: 500px; width: 95%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--md-sys-color-primary);">💌 Expérience Enveloppe 3D (Vue Invité)</h3>
+        <button id="envelope-modal-close" class="icon-btn" title="Fermer"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--md-sys-color-on-surface-variant); text-align: left; width: 100%; margin-top: 4px;">
+        Voici l'expérience magique que découvrent vos invités lorsqu'ils ouvrent votre lien ou scannent l'affiche !
+      </p>
+      <div id="envelope-modal-mount" style="width: 100%; display: flex; justify-content: center; margin: 1rem 0;"></div>
+    </div>
+  </div>
+
+  <!-- Responsive HTML Email Generator Modal -->
+  <div id="email-modal" class="modal-backdrop">
+    <div class="modal-box" style="max-width: 640px; width: 95%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--md-sys-color-primary);">💌 Courriel d'Invitation HTML Professionnel</h3>
+        <button id="email-modal-close" class="icon-btn" title="Fermer"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--md-sys-color-on-surface-variant); text-align: left; width: 100%; margin-top: 4px;">
+        Format responsive élégant avec boutons d'agenda interactifs intégrés, prêt pour Gmail, Outlook, Apple Mail.
+      </p>
+      <div id="email-preview-container" style="width: 100%; max-height: 320px; overflow-y: auto; background: #f8fafc; border: 1px solid var(--md-sys-color-outline-variant); border-radius: 8px; margin: 0.75rem 0; padding: 8px;"></div>
+      <div style="display: flex; gap: 0.5rem; width: 100%;">
+        <button type="button" id="btn-copy-email-html" class="btn-primary" style="flex: 1; font-size: 0.85rem;">
+          📋 Copier le Code HTML du Courriel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- iOS & Android Countdown Widget Guide Modal -->
+  <div id="widget-modal" class="modal-backdrop">
+    <div class="modal-box" style="max-width: 520px; width: 95%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--md-sys-color-primary);">📱 Widget Compte à Rebours sur Téléphone</h3>
+        <button id="widget-modal-close" class="icon-btn" title="Fermer"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div style="font-size: 0.85rem; line-height: 1.6; text-align: left; margin: 1rem 0; color: var(--md-sys-color-on-surface);">
+        <div style="background: var(--md-sys-color-surface-container); padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--md-sys-color-outline-variant);">
+          <strong style="color: var(--md-sys-color-primary);">🍏 Sur iPhone / iPad (iOS) :</strong><br>
+          1. Ouvrez cette page dans <strong>Safari</strong>.<br>
+          2. Touchez le bouton de <strong>Partage</strong> (carré avec flèche vers le haut).<br>
+          3. Choisissez <strong>« Sur l'écran d'accueil »</strong>.<br>
+          ✨ L'événement et le décompte apparaissent sous forme de Widget interactif !
+        </div>
+        <div style="background: var(--md-sys-color-surface-container); padding: 12px; border-radius: 10px; border: 1px solid var(--md-sys-color-outline-variant);">
+          <strong style="color: var(--md-sys-color-primary);">🤖 Sur Android (Chrome) :</strong><br>
+          1. Touchez les <strong>3 petits points</strong> en haut à droite.<br>
+          2. Sélectionnez <strong>« Ajouter à l'écran d'accueil »</strong> ou « Installer l'application ».<br>
+          ✨ Accès instantané à l'invitation et au compte à rebours sans connexion !
+        </div>
+      </div>
+      <button id="widget-modal-ok" class="modal-close-btn" style="width: 100%;">Compris !</button>
+    </div>
+  </div>
+
+  <!-- Host Profile Settings Modal (LocalStorage 100% Client-Side) -->
+  <div id="profile-modal" class="modal-backdrop">
+    <div class="modal-box" style="max-width: 480px; width: 95%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--md-sys-color-primary);">👤 Mon Profil Hôte (Sauvegardé Localement)</h3>
+        <button id="profile-modal-close" class="icon-btn" title="Fermer"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--md-sys-color-on-surface-variant); text-align: left; width: 100%; margin-top: 4px;">
+        Enregistrez vos coordonnées par défaut dans votre navigateur pour pré-remplir vos événements en un clic.
+      </p>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; margin: 1rem 0; text-align: left;">
+        <div>
+          <label style="font-size: 0.82rem; font-weight: 700;">Votre Nom / Organisateur :</label>
+          <input type="text" id="profile-host-name" class="m3-input" placeholder="Ex: Alex Dupont">
+        </div>
+        <div>
+          <label style="font-size: 0.82rem; font-weight: 700;">Votre Adresse de Maison :</label>
+          <input type="text" id="profile-host-address" class="m3-input" placeholder="Ex: 123 rue des Lilas, Montréal">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; width: 100%;">
+        <button type="button" id="btn-save-host-profile" class="btn-primary" style="flex: 1;">
+          💾 Enregistrer mon Profil
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GiftList / Wishlist QR Code Modal -->
+  <div id="giftlist-qr-modal" class="modal-backdrop">
+    <div class="modal-box" style="max-width: 440px; width: 95%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--md-sys-color-primary);">🎁 QR Code Liste de Cadeaux</h3>
+        <button id="giftlist-qr-close" class="icon-btn" title="Fermer"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--md-sys-color-on-surface-variant); text-align: left; width: 100%; margin-top: 4px;">
+        Scannez pour ouvrir directement la liste de souhaits / cagnotte de l'événement !
+      </p>
+      <div id="giftlist-qrcode-container" style="display: flex; justify-content: center; margin: 1rem 0;"></div>
+      <div id="giftlist-url-display" style="font-size: 0.82rem; word-break: break-all; color: var(--md-sys-color-primary); font-weight: 600; margin-bottom: 0.75rem;"></div>
+      <button type="button" id="btn-copy-giftlist-url" class="btn-tonal" style="width: 100%;">
+        📋 Copier le lien de la liste
+      </button>
+    </div>
+  </div>
+
+  <!-- Zero-Server 4-Digit PIN Security Decryption Lock Screen -->
+  <div id="pin-lock-modal" class="modal-backdrop">
+    <div class="modal-box" style="max-width: 420px; width: 95%; text-align: center;">
+      <span class="material-symbols-outlined" style="font-size: 48px; color: var(--md-sys-color-primary); margin-bottom: 8px;">lock</span>
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--md-sys-color-primary);">Invitation Protégée</h3>
+      <p style="font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); margin: 6px 0 16px 0;">
+        Cet événement est chiffré. Entrez le code PIN à 4 chiffres fourni par l'hôte pour déverrouiller l'accès.
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 16px;">
+        <input type="password" id="pin-input-1" class="pin-digit-box" maxlength="1" inputmode="numeric" style="width: 48px; height: 56px; font-size: 24px; text-align: center; border-radius: 12px; border: 2px solid var(--md-sys-color-primary); font-weight: 800;">
+        <input type="password" id="pin-input-2" class="pin-digit-box" maxlength="1" inputmode="numeric" style="width: 48px; height: 56px; font-size: 24px; text-align: center; border-radius: 12px; border: 2px solid var(--md-sys-color-primary); font-weight: 800;">
+        <input type="password" id="pin-input-3" class="pin-digit-box" maxlength="1" inputmode="numeric" style="width: 48px; height: 56px; font-size: 24px; text-align: center; border-radius: 12px; border: 2px solid var(--md-sys-color-primary); font-weight: 800;">
+        <input type="password" id="pin-input-4" class="pin-digit-box" maxlength="1" inputmode="numeric" style="width: 48px; height: 56px; font-size: 24px; text-align: center; border-radius: 12px; border: 2px solid var(--md-sys-color-primary); font-weight: 800;">
+      </div>
+
+      <div id="pin-error-msg" style="display: none; color: var(--md-sys-color-error); font-size: 0.82rem; font-weight: 700; margin-bottom: 12px;">
+        ❌ Code PIN incorrect. Veuillez réessayer.
+      </div>
+
+      <button type="button" id="btn-submit-pin" class="btn-primary" style="width: 100%;">
+        🔓 Déverrouiller l'événement
+      </button>
+    </div>
+  </div>
+
+  <!-- Rich Share Modal for Messenger / Messages (SMS) / WhatsApp -->
+  <div id="share-message-modal" class="modal-backdrop">
+    <div class="modal-box" style="max-width: 540px; width: 95%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--md-sys-color-primary);">💬 Partager sur Messenger & Messages</h3>
+        <button id="share-message-close" class="icon-btn" title="Fermer"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--md-sys-color-on-surface-variant); text-align: left; width: 100%; margin-top: 4px;">
+        Voici le message propre et réorganisé avec la carte 3D, les agendas et la liste de cadeaux :
+      </p>
+
+      <textarea id="share-message-preview" class="m3-input" rows="8" readonly style="width: 100%; font-size: 0.84rem; line-height: 1.5; margin: 10px 0; background: var(--md-sys-color-surface-container); border-radius: 10px;"></textarea>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;">
+        <button type="button" id="btn-share-modal-messenger" class="btn-primary" style="font-size: 0.82rem; padding: 10px 8px;">
+          💬 Copier & Ouvrir Messenger
+        </button>
+        <button type="button" id="btn-share-modal-sms" class="btn-tonal" style="font-size: 0.82rem; padding: 10px 8px;">
+          📱 Envoyer par SMS
+        </button>
+        <button type="button" id="btn-share-modal-whatsapp" class="btn-tonal" style="font-size: 0.82rem; padding: 10px 8px;">
+          🟢 Envoyer sur WhatsApp
+        </button>
+        <button type="button" id="btn-share-modal-copy" class="btn-tonal" style="font-size: 0.82rem; padding: 10px 8px;">
+          📋 Copier le texte
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Material 3 Snackbar Toast -->
+  <div id="m3-snackbar" class="m3-snackbar" role="status" aria-live="polite">
+    <span class="material-symbols-outlined" style="font-size: 20px; color: var(--md-sys-color-primary-container);">check_circle</span>
+    <span id="snackbar-text">Action effectuée</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-links">
+      <a href="https://m3.material.io/" target="_blank" rel="noopener">Material Design 3</a>
+      <span>•</span>
+      <a href="https://fb.me/e/4PdUxDILi" target="_blank" rel="noopener">Format Événements FB</a>
+      <span>•</span>
+      <a href="https://calendar.google.com" target="_blank" rel="noopener">Google Calendar</a>
+    </div>
+    <p>MessToCal © 2026 — Analyse 100% locale et privée dans votre navigateur. Aucune donnée n'est envoyée à des serveurs tiers.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="./js/crypto-vault.js"></script>
+  <script src="./js/qrcode.min.js"></script>
+  <script src="./js/parser.js"></script>
+  <script src="./js/calendar.js"></script>
+  <script src="./js/ocr-engine.js"></script>
+  <script src="./js/smart-tools.js"></script>
+  <script src="./js/envelope-3d.js"></script>
+  <script src="./js/card-generator.js"></script>
+  <script src="./js/app.js"></script>
+
+  <!-- Google Translate Official Script -->
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>
