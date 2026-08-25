@@ -71,6 +71,9 @@ const OcrEngine = (function() {
   };
 })();
 
+if (typeof window !== 'undefined') {
+  window.OcrEngine = OcrEngine;
+}
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = OcrEngine;
 }

@@ -192,6 +192,9 @@ const CryptoVault = (function() {
   };
 })();
 
+if (typeof window !== 'undefined') {
+  window.CryptoVault = CryptoVault;
+}
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = CryptoVault;
 }

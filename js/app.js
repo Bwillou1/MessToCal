@@ -87,49 +87,58 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
   document.addEventListener('DOMContentLoaded', init);
 
   async function init() {
-    checkCookiesAndStorage();
-    setupTheme();
-    setupSimpleMode();
-    setupServiceWorker();
-    setupEventListeners();
-    setupPresets();
-    setupSmartTools();
-    setupHostProfile();
-    setupPinSecurity();
+    try { checkCookiesAndStorage(); } catch(e) { console.warn("checkCookies error", e); }
+    try { setupTheme(); } catch(e) { console.warn("setupTheme error", e); }
+    try { setupSimpleMode(); } catch(e) { console.warn("setupSimpleMode error", e); }
+    try { setupServiceWorker(); } catch(e) { console.warn("setupSW error", e); }
+    try { setupEventListeners(); } catch(e) { console.error("setupEventListeners error", e); }
+    try { setupPresets(); } catch(e) { console.warn("setupPresets error", e); }
+    try { setupSmartTools(); } catch(e) { console.warn("setupSmartTools error", e); }
+    try { setupHostProfile(); } catch(e) { console.warn("setupHostProfile error", e); }
+    try { setupPinSecurity(); } catch(e) { console.warn("setupPinSecurity error", e); }
 
     // 1. Check if event is ENCRYPTED with PIN (Zero-Server client-side crypto)
-    const encParams = typeof CryptoVault !== 'undefined' ? CryptoVault.parseEncryptedParams() : null;
-    if (encParams) {
-      openPinLockModal(encParams);
-      return;
+    try {
+      const encParams = typeof CryptoVault !== 'undefined' ? CryptoVault.parseEncryptedParams() : null;
+      if (encParams) {
+        openPinLockModal(encParams);
+        return;
+      }
+    } catch(e) {
+      console.warn("parseEncryptedParams error", e);
     }
 
     // 2. Check if event is embedded in URL Hash (Standard share link)
-    const sharedEvent = CalendarGenerator.parseShareUrl();
-    if (sharedEvent) {
-      currentEvent = sharedEvent;
-      populateForm(currentEvent);
-      setupGuestBanner(currentEvent);
-      showSnackbar("Événement scanné / partagé chargé avec succès !");
-    } else {
-      // Zone de saisie vide par défaut au démarrage
-      rawInput.value = '';
-      resetBadges();
-      currentEvent = {
-        title: '',
-        organizer: '',
-        startDate: '',
-        startTime: '12:00',
-        endDate: '',
-        endTime: '18:00',
-        location: '',
-        theme: '',
-        foodInfo: '',
-        giftListUrl: '',
-        notes: ''
-      };
-      populateForm(currentEvent);
+    try {
+      const sharedEvent = typeof CalendarGenerator !== 'undefined' ? CalendarGenerator.parseShareUrl() : null;
+      if (sharedEvent) {
+        currentEvent = sharedEvent;
+        populateForm(currentEvent);
+        setupGuestBanner(currentEvent);
+        showSnackbar("Événement scanné / partagé chargé avec succès !");
+        return;
+      }
+    } catch(e) {
+      console.warn("parseShareUrl error", e);
     }
+
+    // Zone de saisie vide par défaut au démarrage
+    if (rawInput) rawInput.value = '';
+    resetBadges();
+    currentEvent = {
+      title: '',
+      organizer: '',
+      startDate: '',
+      startTime: '12:00',
+      endDate: '',
+      endTime: '18:00',
+      location: '',
+      theme: '',
+      foodInfo: '',
+      giftListUrl: '',
+      notes: ''
+    };
+    populateForm(currentEvent);
   }
 
   /**
@@ -207,21 +216,32 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
    * Theme toggler (Light/Dark mode)
    */
   function setupTheme() {
-    const savedTheme = localStorage.getItem('messtocal-theme') || 
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    let defaultTheme = 'light';
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        defaultTheme = 'dark';
+      }
+    } catch(e) {}
+
+    let savedTheme = defaultTheme;
+    try {
+      savedTheme = localStorage.getItem('messtocal-theme') || defaultTheme;
+    } catch(e) {}
     setTheme(savedTheme);
 
-    themeToggle.addEventListener('click', () => {
+    themeToggle?.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme');
       const next = current === 'dark' ? 'light' : 'dark';
       setTheme(next);
-      localStorage.setItem('messtocal-theme', next);
+      try {
+        localStorage.setItem('messtocal-theme', next);
+      } catch(e) {}
     });
   }
 
   function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
-    const icon = themeToggle.querySelector('.material-symbols-outlined');
+    const icon = themeToggle?.querySelector('.material-symbols-outlined');
     if (icon) {
       icon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
     }
@@ -406,28 +426,26 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
    */
   function setupEventListeners() {
     // Parse button
-    btnParse.addEventListener('click', runParser);
+    btnParse?.addEventListener('click', runParser);
 
     // Paste button
-    if (btnPaste) {
-      btnPaste.addEventListener('click', async () => {
-        try {
-          const text = await navigator.clipboard.readText();
-          if (text) {
-            rawInput.value = text;
-            runParser();
-            showSnackbar("Texte collé et analysé !");
-          }
-        } catch (e) {
-          rawInput.focus();
-          showSnackbar("Veuillez coller le texte directement dans la zone de saisie.");
+    btnPaste?.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          if (rawInput) rawInput.value = text;
+          runParser();
+          showSnackbar("Texte collé et analysé !");
         }
-      });
-    }
+      } catch (e) {
+        rawInput?.focus();
+        showSnackbar("Veuillez coller le texte directement dans la zone de saisie.");
+      }
+    });
 
     // Clear button
-    btnClear.addEventListener('click', () => {
-      rawInput.value = '';
+    btnClear?.addEventListener('click', () => {
+      if (rawInput) rawInput.value = '';
       currentEvent = {
         title: '',
         organizer: '',
@@ -443,7 +461,7 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
       };
       populateForm(currentEvent);
       resetBadges();
-      rawInput.focus();
+      rawInput?.focus();
       showSnackbar("Saisie effacée.");
     });
 
@@ -459,7 +477,7 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
     });
 
     // Real-Time Input typing / live listening updater
-    rawInput.addEventListener('input', () => {
+    rawInput?.addEventListener('input', () => {
       if (!rawInput.value.trim()) {
         resetBadges();
         currentEvent = {
@@ -478,21 +496,23 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
         populateForm(currentEvent);
       } else {
         runRealTimeDetection(rawInput.value);
-        currentEvent = EventParser.parse(rawInput.value);
-        populateForm(currentEvent);
+        if (typeof EventParser !== 'undefined') {
+          currentEvent = EventParser.parse(rawInput.value);
+          populateForm(currentEvent);
+        }
       }
     });
 
     // Setup Voice Dictation & Audio Note
-    setupVoiceDictation();
+    try { setupVoiceDictation(); } catch(e) { console.warn("setupVoiceDictation error", e); }
 
     // Calendar Export Buttons with Validation & Confetti
-    btnGoogle.addEventListener('click', (e) => {
+    btnGoogle?.addEventListener('click', (e) => {
       e.preventDefault();
       syncCurrentEventFromForm();
       if (!currentEvent.startDate) {
         showSnackbar("⚠️ Veuillez d'abord indiquer ou dicter la date de l'événement.");
-        eventStartDateInput.focus();
+        eventStartDateInput?.focus();
         return;
       }
       const url = CalendarGenerator.getGoogleCalendarUrl(currentEvent);
@@ -503,12 +523,12 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
       showSnackbar("Ouverture de Google Calendar...");
     });
 
-    btnOutlook.addEventListener('click', (e) => {
+    btnOutlook?.addEventListener('click', (e) => {
       e.preventDefault();
       syncCurrentEventFromForm();
       if (!currentEvent.startDate) {
         showSnackbar("⚠️ Veuillez d'abord indiquer ou dicter la date de l'événement.");
-        eventStartDateInput.focus();
+        eventStartDateInput?.focus();
         return;
       }
       const url = CalendarGenerator.getOutlookUrl(currentEvent);
@@ -519,12 +539,12 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
       showSnackbar("Ouverture de Outlook Calendar...");
     });
 
-    btnYahoo.addEventListener('click', (e) => {
+    btnYahoo?.addEventListener('click', (e) => {
       e.preventDefault();
       syncCurrentEventFromForm();
       if (!currentEvent.startDate) {
         showSnackbar("⚠️ Veuillez d'abord indiquer ou dicter la date de l'événement.");
-        eventStartDateInput.focus();
+        eventStartDateInput?.focus();
         return;
       }
       const url = CalendarGenerator.getYahooCalendarUrl(currentEvent);
@@ -535,12 +555,12 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
       showSnackbar("Ouverture de Yahoo Calendar...");
     });
 
-    btnIcs.addEventListener('click', (e) => {
+    btnIcs?.addEventListener('click', (e) => {
       e.preventDefault();
       syncCurrentEventFromForm();
       if (!currentEvent.startDate) {
         showSnackbar("⚠️ Veuillez d'abord indiquer ou dicter la date de l'événement.");
-        eventStartDateInput.focus();
+        eventStartDateInput?.focus();
         return;
       }
       CalendarGenerator.downloadIcs(currentEvent);
@@ -559,7 +579,7 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
     const btnShareModalWhatsapp = document.getElementById('btn-share-modal-whatsapp');
     const btnShareModalCopy = document.getElementById('btn-share-modal-copy');
 
-    btnShareMessenger.addEventListener('click', async () => {
+    btnShareMessenger?.addEventListener('click', async () => {
       syncCurrentEventFromForm();
       const msgText = CalendarGenerator.generateMessengerText(currentEvent);
 
@@ -606,7 +626,7 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
       showSnackbar("📋 Message complet copié dans le presse-papier !");
     });
 
-    btnCopyShareLink.addEventListener('click', async () => {
+    btnCopyShareLink?.addEventListener('click', async () => {
       syncCurrentEventFromForm();
       const cbPin = document.getElementById('cb-enable-pin');
       const pinInput = document.getElementById('input-event-pin');
@@ -629,16 +649,16 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
     });
 
     // QR Code Modal
-    btnShowQr.addEventListener('click', async () => {
+    btnShowQr?.addEventListener('click', async () => {
       syncCurrentEventFromForm();
       await openQrModal();
     });
 
-    qrCloseBtn.addEventListener('click', () => {
-      qrModal.classList.remove('open');
+    qrCloseBtn?.addEventListener('click', () => {
+      qrModal?.classList.remove('open');
     });
 
-    qrModal.addEventListener('click', (e) => {
+    qrModal?.addEventListener('click', (e) => {
       if (e.target === qrModal) {
         qrModal.classList.remove('open');
       }

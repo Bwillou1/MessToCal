@@ -76,6 +76,9 @@ const Envelope3D = (function() {
   };
 })();
 
+if (typeof window !== 'undefined') {
+  window.Envelope3D = Envelope3D;
+}
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Envelope3D;
 }

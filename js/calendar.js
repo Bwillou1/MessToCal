@@ -297,6 +297,9 @@ const CalendarGenerator = (function() {
   };
 })();
 
+if (typeof window !== 'undefined') {
+  window.CalendarGenerator = CalendarGenerator;
+}
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = CalendarGenerator;
 }

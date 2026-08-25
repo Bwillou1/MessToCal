@@ -542,6 +542,9 @@ const EventParser = (function() {
 })();
 
 // Export for module/browser environments
+if (typeof window !== 'undefined') {
+  window.EventParser = EventParser;
+}
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = EventParser;
 }

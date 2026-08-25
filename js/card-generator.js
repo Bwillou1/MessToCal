@@ -445,6 +445,9 @@ const CardGenerator = (function() {
   };
 })();
 
+if (typeof window !== 'undefined') {
+  window.CardGenerator = CardGenerator;
+}
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = CardGenerator;
 }

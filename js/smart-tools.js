@@ -323,6 +323,9 @@ const SmartTools = (function() {
   };
 })();
 
+if (typeof window !== 'undefined') {
+  window.SmartTools = SmartTools;
+}
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = SmartTools;
 }
