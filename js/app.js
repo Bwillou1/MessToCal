@@ -87,6 +87,7 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
   document.addEventListener('DOMContentLoaded', init);
 
   async function init() {
+    checkCookiesAndStorage();
     setupTheme();
     setupSimpleMode();
     setupServiceWorker();
@@ -227,39 +228,92 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
   }
 
   /**
-   * Mode Simple (Senior & Personnes Âgées) Toggler
+  /**
+   * Cookie & LocalStorage Availability Verification
+   */
+  function checkCookiesAndStorage() {
+    let storageAvailable = true;
+    try {
+      if (typeof navigator.cookieEnabled !== 'undefined' && !navigator.cookieEnabled) {
+        storageAvailable = false;
+      }
+      const testKey = '__test_messtocal__';
+      localStorage.setItem(testKey, testKey);
+      localStorage.removeItem(testKey);
+    } catch (e) {
+      storageAvailable = false;
+    }
+
+    if (!storageAvailable) {
+      const banner = document.getElementById('cookie-warning-banner');
+      if (banner) banner.style.display = 'block';
+    }
+  }
+
+  /**
+   * Mode Simple (Senior & Personnes Âgées) Toggler & URL Routing
    */
   function setupSimpleMode() {
     const btnSimple = document.getElementById('btn-toggle-simple-mode');
     const labelSimple = document.getElementById('simple-mode-label');
+    const btnShareSenior = document.getElementById('btn-share-senior-url');
 
-    const isSimple = localStorage.getItem('messtocal-simple-mode') === 'true';
-    if (isSimple) {
-      document.body.classList.add('mode-simple');
-      if (labelSimple) labelSimple.textContent = 'Mode Complet (Pro)';
-      if (btnSimple) {
-        btnSimple.style.background = '#dcfce7';
-        btnSimple.style.color = '#15803d';
-        btnSimple.style.borderColor = '#4ade80';
+    // Check URL parameters, path, or hash for /senior, ?mode=senior, or #senior
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasSeniorUrl = window.location.pathname.toLowerCase().includes('/senior') || 
+                          urlParams.get('mode') === 'senior' || 
+                          window.location.hash.toLowerCase().includes('senior');
+
+    let savedSimple = false;
+    try {
+      savedSimple = localStorage.getItem('messtocal-simple-mode') === 'true';
+    } catch(e) {}
+
+    const isSimple = hasSeniorUrl || savedSimple;
+
+    function applySimpleState(active) {
+      if (active) {
+        document.body.classList.add('mode-simple');
+        if (labelSimple) labelSimple.textContent = 'Mode Complet (Pro)';
+        if (btnSimple) {
+          btnSimple.style.background = '#dcfce7';
+          btnSimple.style.color = '#15803d';
+          btnSimple.style.borderColor = '#4ade80';
+        }
+        if (btnShareSenior) btnShareSenior.style.display = 'inline-flex';
+      } else {
+        document.body.classList.remove('mode-simple');
+        if (labelSimple) labelSimple.textContent = 'Mode Simple (Senior)';
+        if (btnSimple) {
+          btnSimple.style.background = '#e0f2fe';
+          btnSimple.style.color = '#0369a1';
+          btnSimple.style.borderColor = '#38bdf8';
+        }
+        if (btnShareSenior) btnShareSenior.style.display = 'none';
       }
     }
 
+    applySimpleState(isSimple);
+
     btnSimple?.addEventListener('click', () => {
-      const currentlySimple = document.body.classList.toggle('mode-simple');
-      localStorage.setItem('messtocal-simple-mode', currentlySimple ? 'true' : 'false');
+      const currentlySimple = !document.body.classList.contains('mode-simple');
+      applySimpleState(currentlySimple);
+      try {
+        localStorage.setItem('messtocal-simple-mode', currentlySimple ? 'true' : 'false');
+      } catch(e){}
+
       if (currentlySimple) {
-        if (labelSimple) labelSimple.textContent = 'Mode Complet (Pro)';
-        btnSimple.style.background = '#dcfce7';
-        btnSimple.style.color = '#15803d';
-        btnSimple.style.borderColor = '#4ade80';
         showSnackbar("👓 Mode Simple activé : gros boutons et vue épurée !");
       } else {
-        if (labelSimple) labelSimple.textContent = 'Mode Simple (Senior)';
-        btnSimple.style.background = '#e0f2fe';
-        btnSimple.style.color = '#0369a1';
-        btnSimple.style.borderColor = '#38bdf8';
         showSnackbar("✨ Mode Complet (Pro) activé avec tous les outils !");
       }
+    });
+
+    btnShareSenior?.addEventListener('click', async () => {
+      const baseUrl = window.location.origin + window.location.pathname.replace(/\/+$/, '');
+      const seniorUrl = `${baseUrl}?mode=senior`;
+      await copyToClipboard(seniorUrl);
+      showSnackbar("🔗 Lien direct du Mode Simple copié pour vos proches !");
     });
   }
 

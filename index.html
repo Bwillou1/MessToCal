@@ -77,6 +77,10 @@
           <span id="simple-mode-label">Mode Simple (Senior)</span>
         </button>
 
+        <button id="btn-share-senior-url" class="icon-btn" style="display: none;" title="Copier le lien direct du Mode Simple">
+          <span class="material-symbols-outlined">link</span>
+        </button>
+
         <!-- Dark / Light Theme Toggle -->
         <button id="theme-toggle" class="icon-btn" aria-label="Changer de thème clair/sombre" title="Mode Sombre / Clair">
           <span class="material-symbols-outlined">dark_mode</span>
@@ -87,6 +91,19 @@
 
   <!-- Main Content Area -->
   <main class="main-container">
+
+    <!-- Cookies & Local Storage Disabled Warning Banner -->
+    <div id="cookie-warning-banner" style="display: none; background: #fffbeb; border: 2px solid #f59e0b; border-radius: 12px; padding: 14px 18px; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="material-symbols-outlined" style="color: #d97706; font-size: 28px;">cookie</span>
+        <div>
+          <strong style="color: #92400e; font-size: 0.95rem;">Cookies et Stockage Local Désactivés</strong>
+          <p style="color: #b45309; font-size: 0.84rem; margin-top: 2px;">
+            Pour que l'application fonctionne hors-ligne, mémorise vos préférences et sauvegarde votre profil sans serveur, veuillez <strong>autoriser les cookies et le stockage local</strong> dans les paramètres de votre navigateur.
+          </p>
+        </div>
+      </div>
+    </div>
 
     <!-- Guest / Invitation Landing Banner (Displayed when scanned via QR code or shared link) -->
     <section id="guest-banner" class="guest-hero-card" style="display: none; margin-bottom: 2rem;">

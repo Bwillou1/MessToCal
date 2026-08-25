@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>MessToCal - Redirection</title>
+  <script>
+    // GitHub Pages SPA router
+    var pathSegments = window.location.pathname.split('/').filter(Boolean);
+    // If last segment is 'senior', route to senior mode
+    var isSenior = window.location.pathname.toLowerCase().indexOf('/senior') !== -1;
+    var repoName = pathSegments.length > 0 ? '/' + pathSegments[0] + '/' : '/';
+    var targetUrl = repoName + (isSenior ? '?mode=senior' : '') + (window.location.hash || '');
+    window.location.replace(targetUrl);
+  </script>
+</head>
+<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+  <h2>Chargement de MessToCal...</h2>
+  <p><a href="./">Retour à l'accueil</a></p>
+</body>
+</html>
