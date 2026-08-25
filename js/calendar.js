@@ -221,7 +221,9 @@ const CalendarGenerator = (function() {
       n: event.notes
     };
     
-    const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(minimalState)))));
+    let encoded = LZString.compressToEncodedURIComponent(JSON.stringify(minimalState));
+    // Add a prefix to distinguish from old base64 URLs
+    encoded = 'LZ' + encoded;
     const baseUrl = (typeof window !== 'undefined' && window.location) ? window.location.href.split('#')[0] : '';
     return `${baseUrl}#event=${encoded}`;
   }
@@ -235,7 +237,13 @@ const CalendarGenerator = (function() {
 
     try {
       const encoded = hash.split('#event=')[1];
-      const jsonStr = decodeURIComponent(escape(atob(decodeURIComponent(encoded))));
+      let jsonStr;
+      if (encoded.startsWith('LZ')) {
+        jsonStr = LZString.decompressFromEncodedURIComponent(encoded.substring(2));
+      } else {
+        // Fallback for older URLs
+        jsonStr = decodeURIComponent(escape(atob(decodeURIComponent(encoded))));
+      }
       const data = JSON.parse(jsonStr);
       return {
         title: data.t || '',
