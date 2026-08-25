@@ -1404,3 +1404,319 @@ body.mode-simple .share-actions-row #btn-share-messenger {
 .footer-links a:hover {
   text-decoration: underline;
 }
+
+/* ==========================================================================
+   Comprehensive Mobile & Tablet / iPad Responsive Optimization
+   ========================================================================== */
+
+/* --- Tablet / iPad (Portrait & Landscape: 601px - 1024px) --- */
+@media (max-width: 1024px) {
+  .main-container {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  .grid-layout {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+
+  .export-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .template-selector-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* --- Mobile Phones (Screens <= 640px) --- */
+@media (max-width: 640px) {
+  /* Prevent iOS automatic zoom on focus */
+  .m3-input, .m3-textarea, select {
+    font-size: 16px !important;
+  }
+
+  /* App Bar Compact Layout */
+  .app-bar-inner {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .brand-logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .brand-name {
+    font-size: 1.05rem;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .brand-badge {
+    display: none;
+  }
+
+  .top-bar-actions {
+    gap: 0.35rem;
+  }
+
+  .translate-wrapper {
+    padding: 2px 6px;
+    min-height: 32px;
+  }
+
+  .translate-wrapper span:last-child {
+    display: none;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  #btn-toggle-simple-mode {
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Hero Section */
+  .hero-banner {
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-title {
+    font-size: 1.4rem;
+    line-height: 1.3;
+  }
+
+  .hero-desc {
+    font-size: 0.88rem;
+    padding: 0 0.5rem;
+  }
+
+  /* Main Container & Cards */
+  .main-container {
+    padding: 0.75rem 0.6rem 3rem;
+  }
+
+  .m3-card {
+    padding: 1.15rem 0.9rem;
+    border-radius: 16px;
+  }
+
+  .card-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+  /* Form & Inputs */
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .m3-field-group label {
+    font-size: 0.78rem;
+  }
+
+  .m3-input {
+    padding: 0.65rem 0.75rem;
+    border-radius: 10px;
+  }
+
+  .m3-textarea {
+    min-height: 110px;
+    padding: 0.75rem;
+    border-radius: 12px;
+  }
+
+  /* Action Buttons */
+  .action-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .btn-primary, .btn-tonal {
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.92rem;
+    min-height: 48px;
+  }
+
+  /* Export Buttons (1 Column for perfect finger tap targets) */
+  .export-grid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .cal-btn {
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+    min-height: 48px;
+  }
+
+  /* Share Actions Row */
+  .share-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .share-actions-row #btn-share-messenger {
+    grid-column: 1 / -1;
+  }
+
+  .share-actions-row .btn-tonal {
+    font-size: 0.82rem;
+    padding: 0.65rem 0.5rem;
+    text-align: center;
+    gap: 0.3rem;
+  }
+
+  .share-actions-row .btn-tonal .material-symbols-outlined {
+    font-size: 20px;
+  }
+
+  /* Prompt Banner & Warning Banners */
+  .simple-prompt-bar {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 10px 14px !important;
+  }
+
+  .simple-prompt-bar > div:first-child {
+    gap: 8px !important;
+  }
+
+  .simple-prompt-bar > div:last-child {
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  #btn-banner-activate-simple {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Detection Checklist Banner */
+  .detection-badges-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .detect-badge {
+    padding: 6px 8px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .detection-header {
+    font-size: 0.95rem !important;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* Modals on Mobile */
+  .modal-box {
+    max-width: 95% !important;
+    width: 95% !important;
+    max-height: 88vh !important;
+    overflow-y: auto !important;
+    padding: 1.25rem 1rem !important;
+    border-radius: 20px !important;
+    gap: 0.75rem !important;
+  }
+
+  .template-selector-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.4rem !important;
+  }
+
+  .glass-customizer-panel {
+    padding: 8px 10px !important;
+  }
+
+  #card-preview-container {
+    max-height: 280px !important;
+    padding: 8px !important;
+  }
+
+  #card-canvas-wrapper {
+    max-width: 220px !important;
+  }
+
+  /* Extra Tools Grid on Mobile */
+  .sub-tool-group > div {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.4rem !important;
+  }
+
+  .helper-chip-btn {
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    min-height: 38px;
+  }
+
+  /* Senior Mode Mobile Refinements */
+  body.mode-simple {
+    font-size: 1.05rem;
+  }
+
+  body.mode-simple .m3-card {
+    padding: 1.25rem 1rem;
+    border-radius: 18px;
+  }
+
+  body.mode-simple .card-title {
+    font-size: 1.25rem;
+  }
+
+  body.mode-simple .btn-primary {
+    font-size: 1.1rem;
+    padding: 14px 20px;
+  }
+
+  body.mode-simple .cal-btn {
+    font-size: 1.1rem;
+    padding: 14px 18px;
+  }
+
+  body.mode-simple .share-actions-row #btn-share-messenger {
+    font-size: 1.1rem;
+    padding: 14px 18px;
+  }
+}
+
+/* --- Ultra Small Mobile Screens (<= 380px) --- */
+@media (max-width: 380px) {
+  .hero-title {
+    font-size: 1.25rem;
+  }
+
+  .share-actions-row {
+    grid-template-columns: 1fr;
+  }
+
+  .template-selector-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .detection-badges-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
