@@ -321,6 +321,32 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
       await copyToClipboard(seniorUrl);
       showSnackbar("🔗 Lien direct Mode Senior copié ! Prêt à envoyer.");
     });
+
+    // Top Suggestion Banner Interactions
+    const bannerPrompt = document.getElementById('simple-mode-prompt-banner');
+    const btnBannerActivate = document.getElementById('btn-banner-activate-simple');
+    const btnBannerDismiss = document.getElementById('btn-banner-dismiss-simple');
+
+    try {
+      if (localStorage.getItem('messtocal-dismiss-prompt') === 'true' && bannerPrompt) {
+        bannerPrompt.style.display = 'none';
+      }
+    } catch(e){}
+
+    btnBannerActivate?.addEventListener('click', () => {
+      applySimpleState(true);
+      try {
+        localStorage.setItem('messtocal-simple-mode', 'true');
+      } catch(e){}
+      showSnackbar("👓 Mode Simple activé : vue grand format et épurée !");
+    });
+
+    btnBannerDismiss?.addEventListener('click', () => {
+      if (bannerPrompt) bannerPrompt.style.display = 'none';
+      try {
+        localStorage.setItem('messtocal-dismiss-prompt', 'true');
+      } catch(e){}
+    });
   }
 
   /**

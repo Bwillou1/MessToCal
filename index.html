@@ -92,6 +92,27 @@
   <!-- Main Content Area -->
   <main class="main-container">
 
+    <!-- Top Suggestion Banner for Simple / Senior Mode -->
+    <div id="simple-mode-prompt-banner" class="simple-prompt-bar" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1.5px solid #60a5fa; border-radius: 14px; padding: 12px 18px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);">
+      <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+        <span class="material-symbols-outlined" style="color: #2563eb; font-size: 28px; flex-shrink: 0;">tips_and_updates</span>
+        <div>
+          <strong style="color: #1e40af; font-size: 0.95rem;">💡 Vous trouvez le site trop compliqué ou trop chargé ?</strong>
+          <p style="color: #1d4ed8; font-size: 0.84rem; margin: 2px 0 0 0;">
+            Passez en 1 clic sur notre <strong>Mode Simple & Grand Format</strong> (gros boutons épurés, facile d'utilisation pour tous).
+          </p>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+        <button type="button" id="btn-banner-activate-simple" class="btn-primary" style="font-size: 0.85rem; padding: 8px 16px; border-radius: 20px; white-space: nowrap; background: #2563eb;">
+          👓 Activer le Mode Simple
+        </button>
+        <button type="button" id="btn-banner-dismiss-simple" class="icon-btn" title="Masquer cette notification" style="color: #64748b;">
+          <span class="material-symbols-outlined" style="font-size: 20px;">close</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Cookies & Local Storage Disabled Warning Banner -->
     <div id="cookie-warning-banner" style="display: none; background: #fffbeb; border: 2px solid #f59e0b; border-radius: 12px; padding: 14px 18px; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);">
       <div style="display: flex; align-items: center; gap: 10px;">

@@ -1239,6 +1239,7 @@ body.mode-simple .senior-welcome-banner {
   display: block !important;
 }
 
+body.mode-simple #simple-mode-prompt-banner,
 body.mode-simple .hero-banner,
 body.mode-simple .chips-section,
 body.mode-simple .detection-checklist-container,
