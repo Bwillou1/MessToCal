@@ -42,16 +42,13 @@
   <!-- Top App Bar with Google Translate & Dark/Light Mode -->
   <header class="app-bar">
     <div class="app-bar-inner">
-      <div class="brand-section">
+      <a href="./" class="brand-section" aria-label="Accueil MessToCal">
         <img src="./icons/favicon.svg" alt="Logo MessToCal" class="brand-logo">
         <div class="brand-titles">
-          <div class="brand-name">
-            MessToCal
-            <span class="brand-badge">M3 PWA</span>
-          </div>
-          <span class="brand-subtitle">Messenger & Facebook vers Calendrier</span>
+          <span class="brand-name">MessToCal</span>
+          <span class="brand-subtitle">Invitations vers Calendrier</span>
         </div>
-      </div>
+      </a>
 
       <div class="top-bar-actions">
         <!-- Google Translate Widget Integration -->
@@ -66,15 +63,15 @@
           <span>Installer</span>
         </button>
 
+        <!-- Simple / Senior Mode Toggler -->
+        <button id="btn-toggle-simple-mode" class="mode-toggle-btn" title="Activer le mode grand format et ultra-simple">
+          <span class="material-symbols-outlined">visibility</span>
+          <span id="simple-mode-label">Mode Simple</span>
+        </button>
+
         <!-- Host Profile Settings (Saved locally) -->
         <button id="btn-open-profile-modal" class="icon-btn" aria-label="Mon Profil Hôte Sauvegardé" title="Mon Profil Hôte & Adresse Locale">
           <span class="material-symbols-outlined">account_circle</span>
-        </button>
-
-        <!-- Simple / Senior Mode Toggler -->
-        <button id="btn-toggle-simple-mode" class="m3-chip" style="font-weight: 700; background: #e0f2fe; color: #0369a1; border: 1.5px solid #38bdf8; display: inline-flex; align-items: center; gap: 4px;" title="Activer le mode grand format et ultra-simple">
-          <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
-          <span id="simple-mode-label">Mode Simple (Senior)</span>
         </button>
 
         <button id="btn-share-senior-url" class="icon-btn" style="display: none;" title="Copier le lien direct du Mode Simple">
@@ -92,48 +89,46 @@
   <!-- Main Content Area -->
   <main class="main-container">
 
-    <!-- Top Suggestion Banner for Simple / Senior Mode -->
-    <div id="simple-mode-prompt-banner" class="simple-prompt-bar" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1.5px solid #60a5fa; border-radius: 14px; padding: 12px 18px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);">
-      <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
-        <span class="material-symbols-outlined" style="color: #2563eb; font-size: 28px; flex-shrink: 0;">tips_and_updates</span>
-        <div>
-          <strong style="color: #1e40af; font-size: 0.95rem;">💡 Vous trouvez le site trop compliqué ou trop chargé ?</strong>
-          <p style="color: #1d4ed8; font-size: 0.84rem; margin: 2px 0 0 0;">
-            Passez en 1 clic sur notre <strong>Mode Simple & Grand Format</strong> (gros boutons épurés, facile d'utilisation pour tous).
-          </p>
+    <!-- Top Suggestion Banner for Simple / Senior Mode (Sleek Glassmorphic Pill) -->
+    <div id="simple-mode-prompt-banner" class="simple-prompt-card">
+      <div class="simple-prompt-content">
+        <span class="material-symbols-outlined simple-prompt-icon">tips_and_updates</span>
+        <div class="simple-prompt-text">
+          <strong>💡 Vous préférez une interface ultra-simple ?</strong>
+          <p>Activez le <strong>Mode Grand Format</strong> avec de gros boutons épurés pour toute la famille.</p>
         </div>
       </div>
-      <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-        <button type="button" id="btn-banner-activate-simple" class="btn-primary" style="font-size: 0.85rem; padding: 8px 16px; border-radius: 20px; white-space: nowrap; background: #2563eb;">
-          👓 Activer le Mode Simple
+      <div class="simple-prompt-actions">
+        <button type="button" id="btn-banner-activate-simple" class="btn-activate-simple">
+          👓 Passer au Mode Simple
         </button>
-        <button type="button" id="btn-banner-dismiss-simple" class="icon-btn" title="Masquer cette notification" style="color: #64748b;">
-          <span class="material-symbols-outlined" style="font-size: 20px;">close</span>
+        <button type="button" id="btn-banner-dismiss-simple" class="btn-dismiss-banner" title="Masquer cette suggestion" aria-label="Fermer">
+          <span class="material-symbols-outlined">close</span>
         </button>
       </div>
     </div>
 
     <!-- Cookies & Local Storage Disabled Warning Banner -->
-    <div id="cookie-warning-banner" style="display: none; background: #fffbeb; border: 2px solid #f59e0b; border-radius: 12px; padding: 14px 18px; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);">
+    <div id="cookie-warning-banner" class="cookie-alert-card" style="display: none;">
       <div style="display: flex; align-items: center; gap: 10px;">
         <span class="material-symbols-outlined" style="color: #d97706; font-size: 28px;">cookie</span>
         <div>
           <strong style="color: #92400e; font-size: 0.95rem;">Cookies et Stockage Local Désactivés</strong>
           <p style="color: #b45309; font-size: 0.84rem; margin-top: 2px;">
-            Pour que l'application fonctionne hors-ligne, mémorise vos préférences et sauvegarde votre profil sans serveur, veuillez <strong>autoriser les cookies et le stockage local</strong> dans les paramètres de votre navigateur.
+            Pour que l'application mémorise vos préférences et fonctionne hors-ligne, veuillez <strong>autoriser les cookies et le stockage local</strong> dans votre navigateur.
           </p>
         </div>
       </div>
     </div>
 
     <!-- Senior / Simple Mode Dedicated Welcome Banner -->
-    <div id="senior-banner" class="senior-welcome-banner" style="display: none; background: #f0fdf4; border: 2.5px solid #16a34a; border-radius: 18px; padding: 18px 24px; margin-bottom: 2rem; box-shadow: 0 6px 20px rgba(22, 163, 74, 0.15);">
+    <div id="senior-banner" class="senior-welcome-banner" style="display: none;">
       <div style="display: flex; align-items: center; gap: 16px;">
-        <span class="material-symbols-outlined" style="font-size: 44px; color: #16a34a;">elderly</span>
+        <span class="material-symbols-outlined" style="font-size: 40px; color: #16a34a;">elderly</span>
         <div>
-          <h2 style="font-size: 1.35rem; font-weight: 800; color: #15803d; margin: 0;">👓 Mode Facile & Grand Format (Senior)</h2>
-          <p style="font-size: 1rem; color: #166534; margin: 4px 0 0 0; font-weight: 600;">
-            1. Écrivez ou collez votre message ci-dessous &nbsp;•&nbsp; 2. Cliquez sur le gros bouton bleu pour l'ajouter à votre calendrier !
+          <h2 style="font-size: 1.3rem; font-weight: 800; color: #15803d; margin: 0;">👓 Mode Simple & Grand Format</h2>
+          <p style="font-size: 0.95rem; color: #166534; margin: 3px 0 0 0; font-weight: 600;">
+            1. Écrivez ou collez votre message &nbsp;•&nbsp; 2. Cliquez sur le gros bouton pour l'enregistrer dans votre agenda !
           </p>
         </div>
       </div>

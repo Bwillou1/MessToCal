@@ -150,27 +150,28 @@ body {
    Top App Bar & Google Translate Integration
    ========================================================================== */
 
+/* Top App Bar with Modern Frosted Glass Design */
 .app-bar {
-  background: rgba(255, 255, 255, 0.85);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.03);
 }
 
 [data-theme="dark"] .app-bar {
-  background: rgba(16, 20, 28, 0.85);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  background: rgba(15, 18, 26, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 1px 15px rgba(0, 0, 0, 0.3);
 }
 
 .app-bar-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0.75rem 1.25rem;
+  padding: 0.65rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -180,16 +181,21 @@ body {
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.7rem;
   text-decoration: none;
   color: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.brand-section:hover {
+  opacity: 0.9;
 }
 
 .brand-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--md-shape-corner-medium);
-  box-shadow: var(--md-sys-elevation-1);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(11, 87, 208, 0.2);
 }
 
 .brand-titles {
@@ -198,53 +204,74 @@ body {
 }
 
 .brand-name {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
   color: var(--md-sys-color-primary);
-  letter-spacing: -0.5px;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.brand-badge {
-  font-size: 0.65rem;
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  padding: 2px 6px;
-  border-radius: var(--md-shape-corner-full);
-  font-weight: 600;
-  text-transform: uppercase;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
 }
 
 .brand-subtitle {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--md-sys-color-on-surface-variant);
+  font-weight: 500;
+  letter-spacing: -0.1px;
 }
 
 .top-bar-actions {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Mode Toggle Button (Pill Style) */
+.mode-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  background: rgba(11, 87, 208, 0.08);
+  color: var(--md-sys-color-primary);
+  border: 1px solid rgba(11, 87, 208, 0.2);
+  border-radius: var(--md-shape-corner-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-toggle-btn:hover {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+  transform: translateY(-1px);
+}
+
+.mode-toggle-btn .material-symbols-outlined {
+  font-size: 18px;
 }
 
 /* Google Translate Integration Box */
 .translate-wrapper {
   display: flex;
   align-items: center;
-  background: var(--md-sys-color-surface-container-high);
+  background: var(--md-sys-color-surface-container);
   border: 1px solid var(--md-sys-color-outline-variant);
   padding: 4px 10px;
   border-radius: var(--md-shape-corner-full);
-  font-size: 0.85rem;
-  min-height: 38px;
+  font-size: 0.8rem;
+  min-height: 34px;
+  transition: all 0.2s ease;
+}
+
+.translate-wrapper:hover {
+  border-color: var(--md-sys-color-primary);
 }
 
 .translate-icon {
-  font-size: 18px;
+  font-size: 17px;
   color: var(--md-sys-color-primary);
-  margin-right: 6px;
+  margin-right: 4px;
 }
 
 #google_translate_element select {
@@ -252,7 +279,7 @@ body {
   border: none;
   color: var(--md-sys-color-on-surface);
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   outline: none;
   cursor: pointer;
@@ -260,43 +287,193 @@ body {
 
 /* Top bar icon buttons */
 .icon-btn {
-  background: transparent;
-  border: none;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
   color: var(--md-sys-color-on-surface-variant);
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--md-shape-corner-full);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color var(--md-transition-standard), color var(--md-transition-standard);
+  transition: all 0.2s ease;
+}
+
+.icon-btn .material-symbols-outlined {
+  font-size: 20px;
 }
 
 .icon-btn:hover {
-  background-color: var(--md-sys-color-surface-container-highest);
-  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
 }
 
 /* PWA Install Button */
 .install-pwa-btn {
-  display: none; /* Shown dynamically by JS when install prompt is available */
+  display: none;
   align-items: center;
   gap: 0.4rem;
   background: var(--md-sys-color-secondary-container);
   color: var(--md-sys-color-on-secondary-container);
-  border: none;
-  padding: 6px 14px;
+  border: 1px solid var(--md-sys-color-secondary);
+  padding: 6px 12px;
   border-radius: var(--md-shape-corner-full);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .install-pwa-btn:hover {
   transform: translateY(-1px);
   box-shadow: var(--md-sys-elevation-1);
+}
+
+/* ==========================================================================
+   Modern Notification & Suggestion Banners
+   ========================================================================== */
+
+.simple-prompt-card {
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.85) 0%, rgba(243, 232, 255, 0.75) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 16px;
+  padding: 12px 18px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
+  transition: all 0.25s ease;
+}
+
+[data-theme="dark"] .simple-prompt-card {
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.6) 0%, rgba(24, 24, 45, 0.7) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.simple-prompt-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.simple-prompt-icon {
+  font-size: 22px;
+  color: #4f46e5;
+  background: rgba(99, 102, 241, 0.12);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .simple-prompt-icon {
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.25);
+}
+
+.simple-prompt-text strong {
+  font-size: 0.9rem;
+  color: #312e81;
+  display: block;
+}
+
+[data-theme="dark"] .simple-prompt-text strong {
+  color: #e0e7ff;
+}
+
+.simple-prompt-text p {
+  font-size: 0.82rem;
+  color: #4338ca;
+  margin: 1px 0 0 0;
+}
+
+[data-theme="dark"] .simple-prompt-text p {
+  color: #c7d2fe;
+}
+
+.simple-prompt-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-activate-simple {
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+}
+
+.btn-activate-simple:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
+.btn-dismiss-banner {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-dismiss-banner .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.btn-dismiss-banner:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #111827;
+}
+
+[data-theme="dark"] .btn-dismiss-banner:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Senior & Cookie Alert Cards */
+.senior-welcome-banner {
+  background: linear-gradient(135deg, rgba(240, 253, 244, 0.9) 0%, rgba(220, 252, 231, 0.8) 100%);
+  border: 1.5px solid #22c55e;
+  border-radius: 18px;
+  padding: 16px 20px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.1);
+}
+
+.cookie-alert-card {
+  background: rgba(254, 243, 199, 0.9);
+  border: 1.5px solid #f59e0b;
+  border-radius: 14px;
+  padding: 12px 18px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.1);
 }
 
 /* ==========================================================================
