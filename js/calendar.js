@@ -217,7 +217,8 @@ const CalendarGenerator = (function() {
       f: event.foodInfo,
       o: event.organizer,
       gl: event.giftListUrl,
-      fb: event.facebookLink
+      fb: event.facebookLink,
+      n: event.notes
     };
     
     const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(minimalState)))));
@@ -248,7 +249,7 @@ const CalendarGenerator = (function() {
         organizer: data.o || '',
         giftListUrl: data.gl || '',
         facebookLink: data.fb || '',
-        notes: '',
+        notes: data.n || '',
         rawText: `Événement partagé : ${data.t}`
       };
     } catch (e) {

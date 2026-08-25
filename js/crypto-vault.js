@@ -72,7 +72,8 @@ const CryptoVault = (function() {
       f: eventData.foodInfo || '',
       o: eventData.organizer || '',
       gl: eventData.giftListUrl || '',
-      fb: eventData.facebookLink || ''
+      fb: eventData.facebookLink || '',
+      n: eventData.notes || ''
     });
 
     const enc = new TextEncoder();
@@ -121,7 +122,7 @@ const CryptoVault = (function() {
         organizer: data.o || '',
         giftListUrl: data.gl || '',
         facebookLink: data.fb || '',
-        notes: '',
+        notes: data.n || '',
         rawText: `Événement déverrouillé : ${data.t}`
       };
     } catch (err) {
