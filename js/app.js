@@ -355,7 +355,9 @@ Chacun apporte un petit plat à partager (potluck) et ses boissons. Au plaisir d
   function setupServiceWorker() {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch((err) => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          reg.update();
+        }).catch((err) => {
           console.log('SW registration note:', err);
         });
       });
