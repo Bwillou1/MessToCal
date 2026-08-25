@@ -221,9 +221,12 @@ const CalendarGenerator = (function() {
       n: event.notes
     };
     
-    let encoded = LZString.compressToEncodedURIComponent(JSON.stringify(minimalState));
-    // Add a prefix to distinguish from old base64 URLs
-    encoded = 'LZ' + encoded;
+    let encoded;
+    if (typeof LZString !== 'undefined' && LZString && LZString.compressToEncodedURIComponent) {
+      encoded = 'LZ' + LZString.compressToEncodedURIComponent(JSON.stringify(minimalState));
+    } else {
+      encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(minimalState)))));
+    }
     const baseUrl = (typeof window !== 'undefined' && window.location) ? window.location.href.split('#')[0] : '';
     return `${baseUrl}#event=${encoded}`;
   }
@@ -238,11 +241,12 @@ const CalendarGenerator = (function() {
     try {
       const encoded = hash.split('#event=')[1];
       let jsonStr;
-      if (encoded.startsWith('LZ')) {
+      if (encoded.startsWith('LZ') && typeof LZString !== 'undefined' && LZString && LZString.decompressFromEncodedURIComponent) {
         jsonStr = LZString.decompressFromEncodedURIComponent(encoded.substring(2));
       } else {
         // Fallback for older URLs
-        jsonStr = decodeURIComponent(escape(atob(decodeURIComponent(encoded))));
+        const cleanEncoded = encoded.startsWith('LZ') ? encoded.substring(2) : encoded;
+        jsonStr = decodeURIComponent(escape(atob(decodeURIComponent(cleanEncoded))));
       }
       const data = JSON.parse(jsonStr);
       return {

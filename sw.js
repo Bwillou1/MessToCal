@@ -1,8 +1,9 @@
-const CACHE_NAME = 'messtocal-v2.2.0';
+const CACHE_NAME = 'messtocal-v2.3.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
+  './js/lz-string.min.js',
   './js/crypto-vault.js',
   './js/parser.js',
   './js/calendar.js',
