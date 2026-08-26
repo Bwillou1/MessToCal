@@ -130,9 +130,9 @@ body {
   background-attachment: fixed;
 }
 
-/* Material Icons shorthand */
+/* Material Icons shorthand (Immune to translation corruption) */
 .material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
+  font-family: 'Material Symbols Outlined' !important;
   font-weight: normal;
   font-style: normal;
   font-size: 24px;
@@ -144,6 +144,12 @@ body {
   word-wrap: normal;
   direction: ltr;
   vertical-align: middle;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+}
+
+.notranslate, [translate="no"] {
+  -webkit-user-select: auto;
 }
 
 /* ==========================================================================

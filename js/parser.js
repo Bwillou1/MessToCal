@@ -21,12 +21,31 @@ const EventParser = (function() {
     // Anglais
     'january': 0, 'february': 1, 'march': 2, 'april': 3,
     'june': 5, 'july': 6, 'august': 7, 'september': 8,
-    'october': 9, 'november': 10, 'december': 11
+    'october': 9, 'november': 10, 'december': 11,
+    // Espagnol
+    'enero': 0, 'febrero': 1, 'marzo': 2, 'abril': 3, 'mayo': 4, 'junio': 5,
+    'julio': 6, 'agosto': 7, 'septiembre': 8, 'setiembre': 8, 'octubre': 9, 'noviembre': 10, 'diciembre': 11,
+    // Allemand
+    'januar': 0, 'februar': 1, 'märz': 2, 'maerz': 2, 'juni': 5, 'juli': 6, 'oktober': 9, 'dezember': 11,
+    // Italien
+    'gennaio': 0, 'febbraio': 1, 'maggio': 4, 'giugno': 5, 'luglio': 6, 'settembre': 8, 'ottobre': 9, 'novembre': 10, 'dicembre': 11,
+    // Portugais
+    'janeiro': 0, 'fevereiro': 1, 'março': 2, 'marco': 2, 'maio': 4, 'junho': 5, 'julho': 6, 'outubro': 9, 'novembro': 10, 'dezembro': 11
   };
 
   const DAYS_OF_WEEK = {
+    // Français
     'lundi': 1, 'mardi': 2, 'mercredi': 3, 'jeudi': 4, 'vendredi': 5, 'samedi': 6, 'dimanche': 0,
-    'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4, 'friday': 5, 'saturday': 6, 'sunday': 0
+    // Anglais
+    'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4, 'friday': 5, 'saturday': 6, 'sunday': 0,
+    // Espagnol
+    'lunes': 1, 'martes': 2, 'miércoles': 3, 'miercoles': 3, 'jueves': 4, 'viernes': 5, 'sábado': 6, 'sabado': 6, 'domingo': 0,
+    // Allemand
+    'montag': 1, 'dienstag': 2, 'mittwoch': 3, 'donnerstag': 4, 'freitag': 5, 'samstag': 6, 'sonntag': 0,
+    // Italien
+    'lunedì': 1, 'lunedi': 1, 'martedì': 2, 'martedi': 2, 'mercoledì': 3, 'mercoledi': 3, 'giovedì': 4, 'giovedi': 4, 'venerdì': 5, 'venerdi': 5, 'sabato': 6, 'domenica': 0,
+    // Portugais
+    'segunda-feira': 1, 'terça-feira': 2, 'quarta-feira': 3, 'quinta-feira': 4, 'sexta-feira': 5, 'sábado': 6, 'domingo': 0
   };
 
   /**
